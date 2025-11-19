@@ -16,7 +16,7 @@ void randomizeArray(std::vector<int>& arr, int minVal, int maxVal) {
 }
 
 void resultswindow(int mergecomp, int bubblecomp, int insertcomp, int selectcomp, String result) {
-    RenderWindow resultwindow(VideoMode({500, 300}), "Sorting Algorithm Comparisons");
+    RenderWindow resultwindow(VideoMode({400, 300}), "Sorting Algorithm Comparisons");
     Font font("C:\\Windows\\Fonts\\Arial.ttf");
 
     Text resultTitle(font, result, 24);
@@ -47,13 +47,9 @@ void resultswindow(int mergecomp, int bubblecomp, int insertcomp, int selectcomp
 
         resultwindow.clear(Color::White);
         resultwindow.draw(resultTitle);
-        if (mergecomp != 0)
         resultwindow.draw(mergeText);
-        if (bubblecomp != 0)
         resultwindow.draw(bubbleText);
-        if (insertcomp != 0)
         resultwindow.draw(insertText);
-        if (selectcomp != 0)
         resultwindow.draw(selectText);
         resultwindow.display();
     }
@@ -114,7 +110,7 @@ public:
             if (data[j] > key) {
                 data[j + 1] = data[j];
                 insertdrawData(data, window, j, i, comparisons);
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 --j;
             } else {
                 break;
@@ -144,7 +140,7 @@ public:
             if (minIndex != i) {
                 std::swap(data[i], data[minIndex]);
                 selectdrawData(data, window, minIndex, i, comparisons);
-                std::this_thread::sleep_for(std::chrono::milliseconds(60));
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
             }
         }
         drawcomplete(data, window, comparisons);
@@ -152,8 +148,8 @@ public:
     }
     
     void bubblesort(std::vector<int> data, sf::RenderWindow& window, int& comparisons) {
-        int n= data.size();
-        for (int i = 0; i < n - 1; ++i) {
+        size_t n = data.size();
+        for (size_t i = 0; i < n - 1; ++i) {
             bool swapped = false;
             for (size_t j = 0; j < n - i - 1; ++j) {
                 if (data[j] > data[j + 1]) {
@@ -162,8 +158,6 @@ public:
                 }
                 comparisons++;
                 bubbledrawData(data, window, j, i, comparisons);
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
-
             }
             if (!swapped) {
                 break;
@@ -256,13 +250,13 @@ private:
             if (i >= data.size() - done) {
                 rectangle.setFillColor(sf::Color::Green);
             }
+                        Font font("C:\\Windows\\Fonts\\Arial.ttf");
+            Text text(font,"Bubble Sort \nComparisons: "+std::to_string(comparisons), 24);
+            text.setFillColor(sf::Color::Black);
+            text.setPosition({10.f, 10.f});
+            window.draw(text);
             window.draw(rectangle);
         }
-                Font font("C:\\Windows\\Fonts\\Arial.ttf");
-        Text text(font,"Bubble Sort \nComparisons: "+std::to_string(comparisons), 24);
-        text.setFillColor(sf::Color::Black);
-        text.setPosition({10.f, 10.f});
-        window.draw(text);
         window.display();
     }
     
@@ -277,7 +271,7 @@ void merge(std::vector<int>& data, int left, int mid, int right, sf::RenderWindo
     int j = mid + 1;
 
     while (i <= mid && j <= right) {
-        comparisons++; 
+        comparisons++; // count comparison
         if (data[i] <= data[j]) {
             temp.push_back(data[i++]);
         } else {
@@ -289,7 +283,7 @@ void merge(std::vector<int>& data, int left, int mid, int right, sf::RenderWindo
         int writeIndex = left + static_cast<int>(temp.size()) - 1;
         snapshot[writeIndex] = temp.back();
         mergedrawData(snapshot, window, left, mid, right, writeIndex, i, j, comparisons);
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(60));
     }
 
     while (i <= mid) {
@@ -298,7 +292,7 @@ void merge(std::vector<int>& data, int left, int mid, int right, sf::RenderWindo
         int writeIndex = left + static_cast<int>(temp.size()) - 1;
         snapshot[writeIndex] = temp.back();
         mergedrawData(snapshot, window, left, mid, right, writeIndex, i, j, comparisons);
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(60));
     }
 
     while (j <= right) {
@@ -307,13 +301,15 @@ void merge(std::vector<int>& data, int left, int mid, int right, sf::RenderWindo
         int writeIndex = left + static_cast<int>(temp.size()) - 1;
         snapshot[writeIndex] = temp.back();
         mergedrawData(snapshot, window, left, mid, right, writeIndex, i, j, comparisons);
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(60));
     }
 
-    // merging
+    // write back merged segment
     for (size_t k = 0; k < temp.size(); ++k) {
         data[left + static_cast<int>(k)] = temp[k];
     }
+
+    // final visualization
     mergedrawData(data, window, left, mid, right, right, i, j, comparisons);
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
 }
@@ -369,22 +365,17 @@ int main() {
     const int dataSize = 35;
     std::vector<int> data(dataSize);
     Font font("C:\\Windows\\Fonts\\Arial.ttf");
-    Text Title(font, "Sorting Algorithm Visualiser",80);
-    Text subtitle(font, "CT-24146,CT-24108,CT-24116, CT-24111",24);
-    subtitle.setPosition({700, 115});
+    Text Title(font, "Sort it out!",80);
+    Text subtitle(font, "Choose the algorithm that'll perform the least comparisons on this array",24);
+    subtitle.setPosition({600, 100});
     subtitle.setFillColor(sf::Color::Black);
     subtitle.setStyle(sf::Text::Underlined);
     Title.setStyle(sf::Text::Bold);
     Title.setFillColor(sf::Color::Black);
-    int bubblecomp = 0;
-    int insertioncomp = 0;
-    int selectioncomp = 0;
-    int quickcomp = 0;
-    int mergecomp = 0;
     
-    sf::RenderWindow window(sf::VideoMode({1920, 800}), "Sorting Algorithm Visualizer");
+    sf::RenderWindow window(sf::VideoMode({1920, 800}), "Sort Visualization");
     SortVisualizer visualizer;
-    Title.setPosition({500, 10});
+    Title.setPosition({800, 20});
     randomizeArray(data, 1, 55);
     
     while (window.isOpen()) {
@@ -399,49 +390,64 @@ int main() {
         }
 
         auto mouse_position = sf::Vector2f(sf::Mouse::getPosition(window));
+    
+        int bubblecomp = 0;
+        int insertioncomp = 0;
+        int selectioncomp = 0;
+        int quickcomp = 0;
+        int mergecomp = 0;
+        int decision = 0;
 
         button bubblebtn(50, 150, 200, 50, font, "Bubble Sort", 24, Color::Green);
-        button insertionbtn(300, 150, 200, 50, font, "Insertion Sort", 24, Color::Magenta);
-        button selectionbtn(550, 150, 200, 50, font, "Selection Sort", 24, Color::Red);
+        button insertionbtn(300, 150, 200, 50, font, "Insertion Sort", 24, Color::Red);
+        button selectionbtn(550, 150, 200, 50, font, "Selection Sort", 24, Color::Magenta);
         button mergebtn(800, 150, 200, 50, font, "Merge Sort", 24, Color::Cyan);
-        button randomizebtn(1050, 150, 200, 50, font, "Randomize Array", 24, Color::Blue);
-        button resultsbtn(1300, 150, 200, 50, font, "View Results", 24, Color::Black);
 
         window.clear(sf::Color::White);
         bubblebtn.draw(window);
         insertionbtn.draw(window);
         selectionbtn.draw(window);
         mergebtn.draw(window);
-        randomizebtn.draw(window);
-        resultsbtn.draw(window);
         drawData(data, window);
         window.draw(Title);
         window.draw(subtitle);
 
         if (bubblebtn.isMouseOver(window) && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-            bubblecomp = 0;
-            visualizer.bubblesort(data, window, bubblecomp);
+            decision = 1;
         }
         else if (insertionbtn.isMouseOver(window) && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-            insertioncomp=0;
-            visualizer.insertionsort(data, window, insertioncomp);
-        }   
+            decision = 2;
+        }
         else if (selectionbtn.isMouseOver(window) && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-            selectioncomp=0;
-            visualizer.selectionsort(data, window, selectioncomp);
+            decision = 3;
         }
         else if (mergebtn.isMouseOver(window) && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-            mergecomp=0;
-            std::vector<int> dataCopy = data;
-            visualizer.mergesort(dataCopy, 0, static_cast<int>(data.size()) - 1, window, mergecomp);
-            visualizer.drawcomplete(dataCopy, window, mergecomp);
+            decision = 4;
         }
-        else if (randomizebtn.isMouseOver(window) && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-            randomizeArray(data, 1, 55);
-            mergecomp = insertioncomp = selectioncomp = bubblecomp = 0;
+
+        if (decision !=0){
+        visualizer.bubblesort(data, window, bubblecomp);
+        visualizer.insertionsort(data, window, insertioncomp);  
+        visualizer.selectionsort(data, window, selectioncomp);
+        visualizer.mergesort(data, 0, data.size() - 1, window, mergecomp);
+        if (decision == 1 && bubblecomp<=insertioncomp && bubblecomp<=selectioncomp && bubblecomp<=quickcomp && bubblecomp<=mergecomp) {
+            resultswindow(mergecomp, bubblecomp, insertioncomp, selectioncomp, "Correct! Bubble Sort is the most efficient!");
         }
-        else if (resultsbtn.isMouseOver(window) && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-            resultswindow(mergecomp, bubblecomp, insertioncomp, selectioncomp, "Sorting Algorithm Comparison Results");
+        else if (decision == 2 && insertioncomp<=bubblecomp && insertioncomp<=selectioncomp && insertioncomp<=quickcomp && insertioncomp<=mergecomp) {
+            resultswindow(mergecomp, bubblecomp, insertioncomp, selectioncomp, "Correct! Insertion Sort is the most efficient!");
+        }
+        else if (decision == 3 && selectioncomp<=bubblecomp && selectioncomp<=insertioncomp && selectioncomp<=quickcomp && selectioncomp<=mergecomp) {
+            resultswindow(mergecomp, bubblecomp, insertioncomp, selectioncomp, "Correct! Selection Sort is the most efficient!");
+        }
+        else if (decision == 4 && mergecomp<=bubblecomp && mergecomp<=insertioncomp && mergecomp<=selectioncomp && mergecomp<=quickcomp) {
+            resultswindow(mergecomp, bubblecomp, insertioncomp, selectioncomp, "Correct! Merge Sort is the most efficient!");
+        }
+        else{
+            resultswindow(mergecomp, bubblecomp, insertioncomp, selectioncomp, "Wrong choice!");
+        }
+        bubblecomp = mergecomp = insertioncomp = selectioncomp = quickcomp = 0;
+        randomizeArray(data, 1, 55);
+        decision = 0;
         }
 
         window.display();
